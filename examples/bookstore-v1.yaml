@@ -1,0 +1,97 @@
+openapi: 3.0.3
+info:
+  title: Bookstore API
+  version: 1.4.0
+security:
+  - apiKey: []
+paths:
+  /books:
+    get:
+      operationId: listBooks
+      parameters:
+        - name: limit
+          in: query
+          schema: { type: integer, maximum: 100 }
+        - name: genre
+          in: query
+          schema: { type: string }
+      responses:
+        "200":
+          description: A page of books
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items: { type: array, items: { $ref: "#/components/schemas/Book" } }
+                  next_cursor: { type: string }
+    post:
+      operationId: createBook
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/NewBook" }
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Book" }
+  /books/{bookId}:
+    parameters:
+      - name: bookId
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      operationId: getBook
+      responses:
+        "200":
+          description: One book
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Book" }
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteBook
+      responses:
+        "204":
+          description: Deleted
+  /health:
+    get:
+      operationId: health
+      security: []
+      responses:
+        "200":
+          description: OK
+components:
+  securitySchemes:
+    apiKey: { type: apiKey, in: header, name: X-API-Key }
+    oauth: 
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://auth.example.com/token
+          scopes: { books.read: Read books, books.write: Change books }
+  schemas:
+    NewBook:
+      type: object
+      required: [title, author]
+      properties:
+        title: { type: string, maxLength: 300 }
+        author: { type: string }
+        format: { type: string, enum: [hardcover, paperback, ebook] }
+        price: { type: number }
+    Book:
+      type: object
+      required: [id, title, author, price]
+      properties:
+        id: { type: string }
+        title: { type: string }
+        author: { type: string }
+        format: { type: string, enum: [hardcover, paperback, ebook] }
+        price: { type: number }
+        isbn: { type: string }

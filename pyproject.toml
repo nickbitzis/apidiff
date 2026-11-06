@@ -1,0 +1,22 @@
+[project]
+name = "apidiff"
+version = "1.0.0"
+description = "Find breaking changes between two versions of an OpenAPI spec."
+readme = "README.md"
+license = "MIT"
+authors = [{ name = "Nick Bitzis" }]
+requires-python = ">=3.10"
+dependencies = ["pyyaml>=6"]
+
+[project.scripts]
+apidiff = "apidiff.cli:main"
+
+[dependency-groups]
+dev = ["pytest>=8"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
